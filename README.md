@@ -1,1 +1,1 @@
-# static-site-generator
+# static site generator is my third bootdev project

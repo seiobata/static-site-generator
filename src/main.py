@@ -1,4 +1,4 @@
-from textnode import *
+from textnode import TextNode, TextType
 
 def main():
     new_node = TextNode("This is dummy text", TextType.NORMAL, "https://github.com/seiobata/")

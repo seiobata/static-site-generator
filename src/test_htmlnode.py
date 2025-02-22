@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -39,6 +39,45 @@ class TestHTMLNode(unittest.TestCase):
     def test_to_html_no_child(self):
         node = LeafNode("p", "Just some string")
         self.assertEqual(node.to_html(), "<p>Just some string</p>")
+
+# Testing ParentNode
+    def test_parent_to_html(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("i", "Italic text"),
+                LeafNode(None, "normal text"),
+                LeafNode("a", "inner link", {"href": "https://www.google.com"}),
+            ],
+            {"target": "_blank"}
+        )
+        self.assertEqual(
+            node.to_html(),
+            '<p target="_blank"><i>Italic text</i>normal text<a href="https://www.google.com">inner link</a></p>'
+        )
+    def test_nested_parent(self):
+        node = ParentNode(
+            "p",
+            [
+                ParentNode(
+                    "h1",
+                    [
+                        LeafNode("img", "some image", {"src": "url/of/image.jpg", "alt": "image description"})
+                    ]
+                ),
+                ParentNode(
+                    "ol",
+                    [
+                        LeafNode("li", "item 1"),
+                        LeafNode("li", "item 2"),
+                    ]
+                ),
+            ]
+        )
+        self.assertEqual(
+            node.to_html(), 
+            '<p><h1><img src="url/of/image.jpg" alt="image description">some image</img></h1><ol><li>item 1</li><li>item 2</li></ol></p>'
+        )
 
 
 if __name__ == "__main__":

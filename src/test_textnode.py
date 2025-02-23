@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -28,6 +28,25 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("Test repr method", TextType.NORMAL, "https://github.com/seiobata/")
         self.assertEqual(
             "TextNode(Test repr method, normal, https://github.com/seiobata/)", repr(node)
+        )
+
+# Testing textnode to htmlnode converter
+    def test_text_to_html(self):
+        node = TextNode("Some bold text", TextType.BOLD)
+        self.assertEqual(repr(text_node_to_html_node(node)), 'LeafNode(b, Some bold text, None)')
+
+    def test_text_to_html_image(self):
+        node = TextNode("This should be alt text", TextType.IMAGE, "a/url/image.jpg")
+        self.assertEqual(
+            text_node_to_html_node(node).to_html(),
+            '<img src="a/url/image.jpg" alt="This should be alt text"></img>'
+        )
+    
+    def test_text_to_html_link(self):
+        node = TextNode("A simple link", TextType.LINK, "https://somewhere-fake.dontclick")
+        self.assertEqual(
+            text_node_to_html_node(node).to_html(),
+            '<a href="https://somewhere-fake.dontclick">A simple link</a>'
         )
 
 

@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -47,6 +47,39 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(
             text_node_to_html_node(node).to_html(),
             '<a href="https://somewhere-fake.dontclick">A simple link</a>'
+        )
+
+# Testing split nodes delimiter function
+    def test_split_nodes_italics(self):
+        node1 = TextNode("This contains *some italics*", TextType.NORMAL)
+        node2 = TextNode("another *italics* string but *more*", TextType.NORMAL)
+        node3 = TextNode("no italics here", TextType.NORMAL)
+        nodes = [node1, node2, node3]
+        self.assertListEqual(
+            split_nodes_delimiter(nodes, "*", TextType.ITALIC),
+            [
+                TextNode("This contains ", TextType.NORMAL),
+                TextNode("some italics", TextType.ITALIC),
+                TextNode("another ", TextType.NORMAL),
+                TextNode("italics", TextType.ITALIC),
+                TextNode(" string but ", TextType.NORMAL),
+                TextNode("more", TextType.ITALIC),
+                TextNode("no italics here", TextType.NORMAL)
+            ]
+        )
+    
+    def test_split_nodes_bold_and_italic(self):
+        node = TextNode("This has **both bold** and *italics*", TextType.NORMAL)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "*", TextType.ITALIC)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This has ", TextType.NORMAL),
+                TextNode("both bold", TextType.BOLD),
+                TextNode(" and ", TextType.NORMAL),
+                TextNode("italics", TextType.ITALIC)
+            ]
         )
 
 

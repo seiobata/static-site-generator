@@ -6,7 +6,8 @@ from text_extraction import (
     extract_markdown_images, 
     extract_markdown_links,
     split_nodes_image,
-    split_nodes_link
+    split_nodes_link,
+    text_to_textnodes,
 )
 
 
@@ -92,6 +93,34 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("no links here", TextType.NORMAL),
                 TextNode("start link", TextType.LINK, "https://first.half/"),
                 TextNode(" with more text", TextType.NORMAL)
+            ]
+        )
+
+# Testing text to textnodes function
+    def test_text_to_textnode(self):
+        text = "[start link](https://here.link) some** big words** followed by _slanted words_ and last ![nice pic](https://very.nice)"
+        self.assertListEqual(
+            text_to_textnodes(text),
+            [
+                TextNode("start link", TextType.LINK, "https://here.link"),
+                TextNode(" some", TextType.NORMAL),
+                TextNode(" big words", TextType.BOLD),
+                TextNode(" followed by ", TextType.NORMAL),
+                TextNode("slanted words", TextType.ITALIC),
+                TextNode(" and last ", TextType.NORMAL),
+                TextNode("nice pic", TextType.IMAGE, "https://very.nice"),
+            ]
+        )
+
+    def test_text_to_textnode_no_normal(self):
+        text = "![wow pic](https://very.wow)** more big word**` code here `[lazy url](https://just.testing)"
+        self.assertListEqual(
+            text_to_textnodes(text),
+            [
+                TextNode("wow pic", TextType.IMAGE, "https://very.wow"),
+                TextNode(" more big word", TextType.BOLD),
+                TextNode(" code here ", TextType.CODE),
+                TextNode("lazy url", TextType.LINK, "https://just.testing"),
             ]
         )
 

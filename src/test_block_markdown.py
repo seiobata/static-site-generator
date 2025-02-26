@@ -1,6 +1,10 @@
 import unittest
 
-from block_markdown import markdown_to_blocks
+from block_markdown import (
+    BlockType,
+    markdown_to_blocks,
+    block_to_blocktype,
+)
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -48,6 +52,23 @@ This is the same paragraph on a new line
                 "## Another heading",
             ]
         )
+
+# Testing block to blocktype function
+    def test_block_to_blocktype(self):
+        text1 = "## Some heading"
+        self.assertEqual(block_to_blocktype(text1), BlockType.HEADING)
+
+        text2 = "```A block of code```"
+        self.assertEqual(block_to_blocktype(text2), BlockType.CODE)
+
+        text3 = "> Some quote\n>\n> containing more\n> than one line"
+        self.assertEqual(block_to_blocktype(text3), BlockType.QUOTE)
+
+        text4 = "1. ordered list one\n2. and two\n3. and three"
+        self.assertEqual(block_to_blocktype(text4), BlockType.ORLIST)
+
+        text5 = "- something unordered\n- another line"
+        self.assertEqual(block_to_blocktype(text5), BlockType.UNLIST)
 
 
 if __name__ == "__main__":

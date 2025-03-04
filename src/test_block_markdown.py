@@ -123,6 +123,7 @@ some paragraph in the middle
     def test_quote(self):
         md = """
 > some multi line
+>
 > blockquote with
 
 a paragraph too

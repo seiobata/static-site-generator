@@ -121,7 +121,9 @@ def make_quote_node(block):
     lines = block.split("\n")
     new_lines = []
     for line in lines:
-        new_lines.append(line.lstrip("> "))
+        new_line = line.lstrip(">").strip()
+        if new_line.strip():
+            new_lines.append(new_line)
     new_block = " ".join(new_lines)
     return ParentNode("blockquote", text_to_children(new_block))
 

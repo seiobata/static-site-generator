@@ -5,7 +5,7 @@ from block_markdown import markdown_to_html_node
 
 
 def main():
-    basepath = argv[0] if len(argv) > 1 else "/"
+    basepath = argv[1] if len(argv) > 1 else "/"
 
     print("Deleting docs directory...")
     copy_source_to_dest("static", "docs")

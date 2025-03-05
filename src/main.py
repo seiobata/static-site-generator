@@ -1,14 +1,17 @@
 import os, shutil
 
+from sys import argv
 from block_markdown import markdown_to_html_node
 
 
 def main():
-    print("Deleting public directory...")
-    copy_source_to_dest("static", "public")
+    basepath = argv[0] if len(argv) > 1 else "/"
+
+    print("Deleting docs directory...")
+    copy_source_to_dest("static", "docs")
 
     print("Generating pages...")
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 
 def copy_source_to_dest(source, dest):
@@ -34,7 +37,7 @@ def extract_title(markdown):
     raise ValueError("file has no title")
 
 
-def generate_page(source_path, template_path, dest_path):
+def generate_page(source_path, template_path, dest_path, basepath):
     print(f"From {source_path} to {dest_path} using {template_path}")
     md = ""
     template = ""
@@ -45,6 +48,8 @@ def generate_page(source_path, template_path, dest_path):
     html = markdown_to_html_node(md).to_html()
     title = extract_title(md)
     html_file = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
+    html_file = html_file.replace('href="/', f'href="{basepath}')
+    html_file = html_file.replace('src="/', f'src="{basepath}')
     dest_path_directory = os.path.dirname(dest_path)
     if dest_path_directory != "":
         os.makedirs(dest_path_directory, exist_ok=True)
@@ -52,7 +57,7 @@ def generate_page(source_path, template_path, dest_path):
         new_file.write(html_file)
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     paths = os.listdir(dir_path_content)
     for path in paths:
         source_path = os.path.join(dir_path_content, path)
@@ -60,9 +65,9 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         if source_path.endswith(".md"):
             dest_path = os.path.splitext(dest_path)[0] + ".html"
         if os.path.isfile(source_path):
-            generate_page(source_path, template_path, dest_path)
+            generate_page(source_path, template_path, dest_path, basepath)
         else:
-            generate_pages_recursive(source_path, template_path, dest_path)
+            generate_pages_recursive(source_path, template_path, dest_path, basepath)
 
 
 if __name__ == "__main__":
